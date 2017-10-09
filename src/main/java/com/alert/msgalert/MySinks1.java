@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.alert.msgalert.utils.CacheMap;
 import com.alert.msgalert.utils.MailUtil;
-import com.alert.msgalert.utils.RollingFileLogger;
 
 /**
  * 自定义sink

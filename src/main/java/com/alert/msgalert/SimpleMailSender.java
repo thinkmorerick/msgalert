@@ -1,4 +1,4 @@
-package com.alert.msgalert.utils;
+package com.alert.msgalert;
 
 import java.io.UnsupportedEncodingException;  
 import java.util.Date;  
@@ -18,12 +18,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;  
 import javax.mail.internet.MimeMessage;  
 import javax.mail.internet.MimeMultipart;  
-import javax.mail.internet.MimeUtility; 
+import javax.mail.internet.MimeUtility;  
   
 /** 
  * @ClassName SimpleMailSender 
  * @Description 邮件发送 
  *  
+ * @author laosan 
+ * @date 2014-12-8 下午2:31:24 
  */  
 @SuppressWarnings("static-access")  
 public class SimpleMailSender  
