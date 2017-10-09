@@ -23,8 +23,8 @@ import com.alert.msgalert.utils.RollingFileLogger;
 /**
  * 自定义sink
  */
-public class MySinks2 extends AbstractSink implements Configurable {
-	private static final Logger logger = LoggerFactory.getLogger(MySinks2.class);
+public class MySinks extends AbstractSink implements Configurable {
+	private static final Logger logger = LoggerFactory.getLogger(MySinks.class);
 	
 	private List<String> pnList = new ArrayList<String>();
 	private Integer totalCount;
