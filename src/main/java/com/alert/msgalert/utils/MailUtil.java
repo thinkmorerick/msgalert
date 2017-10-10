@@ -20,8 +20,8 @@ public class MailUtil {
 //        mailInfo.setCcAddress("");  
 //        mailInfo.setBccAddress("");  
         mailInfo.setSubject(PropertiesUtil.getProperty("Subject"));
-        mailInfo.setContent(PropertiesUtil.getProperty("Content" )+ "短信接口存在非法调用风险！"
-        												+" 据统计：1小时内存在相同用户累计调用"+count.toString()+"次。");
+        mailInfo.setContent(PropertiesUtil.getProperty("Content" ));
+//        		+ "短信接口存在非法调用风险！"+" 据统计：1小时内存在相同用户累计调用"+count.toString()+"次。");
         
 //        mailInfo.setAttachFileNames(new String[]  
 //        {  
@@ -32,8 +32,4 @@ public class MailUtil {
         SimpleMailSender.sendTextMail(mailInfo);  
     }  
 	
-	public static void main(String[] args) {
-		sendMail("1111",11,11);
-	}
-
 }

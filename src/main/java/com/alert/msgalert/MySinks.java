@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.alert.msgalert.utils.CacheMap;
 import com.alert.msgalert.utils.MailUtil;
 import com.alert.msgalert.utils.RollingFileLogger;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * 自定义sink
@@ -71,7 +72,7 @@ public class MySinks extends AbstractSink implements Configurable {
 			// 定时器
 			CacheMap<String, Integer> counter = CacheMap.getDefault();
 
-			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && ((Pnss[0].substring(5, 15)).compareTo("2017-09-24"))>=0) {
+			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && ((Pnss[0].substring(5, 15)).compareTo(new SimpleDateFormat("yyyy-MM-dd").format(new Date())))>=0) {
 				
 				String s = Pnss[2].substring(8);
 				s = s.substring(0, s.length() - 1);
@@ -141,5 +142,4 @@ public class MySinks extends AbstractSink implements Configurable {
             logger.error("Cookie inject error : ", e.getMessage(), e);  
         }  
     }  
-
 }
