@@ -72,7 +72,7 @@ public class MySinks extends AbstractSink implements Configurable {
 			// 定时器
 			CacheMap<String, Integer> counter = CacheMap.getDefault();
 
-			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && ((Pnss[0].substring(5, 15)).compareTo(new SimpleDateFormat("yyyy-MM-dd").format(new Date())))>=0) {
+			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && ((Pnss[0].substring(5, 24)).compareTo(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())))>=0) {
 				
 				String s = Pnss[2].substring(8);
 				s = s.substring(0, s.length() - 1);
