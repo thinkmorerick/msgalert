@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class CacheMap<K, V> extends AbstractMap<K, V> {
 
-    private static final long DEFAULT_TIMEOUT = 3600000; //定时器清空时间
+    private static final long DEFAULT_TIMEOUT = Long.parseLong(PropertiesUtil.getProperty("DEFAULT_TIMEOUT")); //定时器清空时间
     private static CacheMap<String, Integer> defaultInstance;
 
     public static synchronized final CacheMap<String, Integer> getDefault() {

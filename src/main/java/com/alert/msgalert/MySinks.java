@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alert.msgalert.utils.CacheMap;
 import com.alert.msgalert.utils.MailUtil;
+import com.alert.msgalert.utils.PropertiesUtil;
 import com.alert.msgalert.utils.RollingFileLogger;
 
 /**
@@ -94,7 +95,7 @@ public class MySinks extends AbstractSink implements Configurable {
 						}
 
 						// 阀值控制
-						if (pn != null && counter.get(pn) > 100) {
+						if (pn != null && counter.get(pn) > Integer.parseInt(PropertiesUtil.getProperty("Threshold"))) {
 							count = counter.get(pn);
 							if (count % 10 == 0) {
 								MailUtil.sendMail(pn, count, totalCount);
