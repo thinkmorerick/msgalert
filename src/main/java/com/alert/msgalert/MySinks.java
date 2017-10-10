@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.alert.msgalert.utils.CacheMap;
 import com.alert.msgalert.utils.MailUtil;
 import com.alert.msgalert.utils.RollingFileLogger;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * 自定义sink
@@ -98,7 +97,6 @@ public class MySinks extends AbstractSink implements Configurable {
 						if (pn != null && counter.get(pn) > 100) {
 							count = counter.get(pn);
 							if (count % 10 == 0) {
-//								Thread.sleep(3000);
 								MailUtil.sendMail(pn, count, totalCount);
 								TimeUnit.SECONDS.sleep(30);
 							}

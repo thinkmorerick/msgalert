@@ -1,8 +1,6 @@
 package com.alert.msgalert.utils;
 
 import java.nio.charset.Charset;  
-import java.util.concurrent.TimeUnit;  
-  
 import org.apache.logging.log4j.Level;  
 import org.apache.logging.log4j.LogManager;  
 import org.apache.logging.log4j.Logger;  
@@ -89,13 +87,4 @@ public class RollingFileLogger {
         fileWriter.info("{}", msg);  
     }  
   
-//    public static void main(String[] args) throws Exception {  
-//        RollingFileLogger writer = new RollingFileLogger("1", "test/test.data", "test/data/${date:yyyy-MM}/test-%d{yyyy-MM-dd_hh_mm_ss}.log.gz");  
-//        RollingFileLogger writer2 = new RollingFileLogger("2", "hehe/hehe.data", "hehe/data/${date:yyyy-MM}/test-%d{yyyy-MM-dd_hh_mm_ss}.log.gz");  
-//        for (int i = 0; true; i++) {  
-//            writer.write("hh" + i);  
-//            writer2.write("hehe" + i);  
-//            TimeUnit.MICROSECONDS.sleep(100);  
-//        }  
-//    }  
 }  
