@@ -34,12 +34,14 @@ public class MySinks extends AbstractSink implements Configurable {
     private static final String SINK_FILENAME = "sink.filename";  
     private static final String SINK_FILEPATTERN = "sink.filepattern";  
     private RollingFileLogger rollingFileLogger; 
+    private static final String startDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    private static final String startTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
 	public void configure(Context context) {
-		
+		logger.info("<-----------------------configure()--------------------->");
 		String sinkId = context.getString(SINK_ID, "log");  
         String sinkFileName = context.getString(SINK_FILENAME); 
-        String sinkFilePattern = context.getString(SINK_FILEPATTERN);  
+        String sinkFilePattern = context.getString(SINK_FILEPATTERN);
   
         logger.info("{} : {} ", SINK_ID, sinkId);  
         logger.info("{} : {} ", SINK_FILENAME, sinkFileName);  
@@ -49,6 +51,11 @@ public class MySinks extends AbstractSink implements Configurable {
 	}
 
 	public Status process() throws EventDeliveryException {
+		logger.info("<-----------------------process()--------------------->");
+
+		logger.info("startTime:------------------------------------------->"+startTime);
+		logger.info("startDate:------------------------------------------->"+startDate);
+		
 		Status status = null; 
 		// Start transaction
 		Channel channel = getChannel();
@@ -71,8 +78,12 @@ public class MySinks extends AbstractSink implements Configurable {
 			String[] Pnss = body.split(" ");
 			// 定时器
 			CacheMap<String, Integer> counter = CacheMap.getDefault();
-
-			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && ((Pnss[0].substring(5, 24)).compareTo(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())))>=0) {
+			
+			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && 
+					((Pnss[0].substring(5, 15)).compareTo(startDate))>=0 &&
+					((Pnss[1].substring(0).compareTo(startTime))>=0)){
+				logger.info("body---------------------------->date:"+(Pnss[0].substring(5, 15)));
+				logger.info("body---------------------------->time:"+(Pnss[1].substring(0)));
 				
 				String s = Pnss[2].substring(8);
 				s = s.substring(0, s.length() - 1);
@@ -116,11 +127,15 @@ public class MySinks extends AbstractSink implements Configurable {
 				Pns = null;
 				Pnss = null;
 			}
+			byte[] results = res.getBytes();
+			if(results!=null)
 			handleEvent(res.getBytes());
+			
 			txn.commit();
 			status = Status.READY;
 		} catch (Throwable th) {
 			txn.rollback();
+			logger.info("<-----------------------rollback()--------------------->");
 			status = Status.BACKOFF; 
 			if (th instanceof Error) {
 				throw (Error) th;
@@ -128,6 +143,7 @@ public class MySinks extends AbstractSink implements Configurable {
 				throw new EventDeliveryException(th);
 			}
 		} finally {
+			logger.info("<-----------------------close()--------------------->");
 			txn.close();
 		}
 		return status;
@@ -137,8 +153,10 @@ public class MySinks extends AbstractSink implements Configurable {
         try {  
             String msgStr = new String(msg, "utf-8");  
             rollingFileLogger.write(msgStr);  
+            logger.info("<-----------------------handleEvent()-------------try-------->");
         } catch (Exception e) {  
             logger.error("Cookie inject error : ", e.getMessage(), e);  
         }  
     }  
+	
 }
