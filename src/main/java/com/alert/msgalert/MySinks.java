@@ -38,23 +38,24 @@ public class MySinks extends AbstractSink implements Configurable {
     private static final String startTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
 	public void configure(Context context) {
-		logger.info("<-----------------------configure()--------------------->");
+		logger.debug("-----------------------configure()---------------------");
 		String sinkId = context.getString(SINK_ID, "log");  
         String sinkFileName = context.getString(SINK_FILENAME); 
         String sinkFilePattern = context.getString(SINK_FILEPATTERN);
   
-        logger.info("{} : {} ", SINK_ID, sinkId);  
-        logger.info("{} : {} ", SINK_FILENAME, sinkFileName);  
-        logger.info("{} : {} ", SINK_FILEPATTERN, sinkFilePattern);  
+        logger.debug("{} : {} ", SINK_ID, sinkId);  
+        logger.debug("{} : {} ", SINK_FILENAME, sinkFileName);  
+        logger.debug("{} : {} ", SINK_FILEPATTERN, sinkFilePattern);  
   
         rollingFileLogger = new RollingFileLogger(sinkId, sinkFileName, sinkFilePattern);  
 	}
 
 	public Status process() throws EventDeliveryException {
-		logger.info("<-----------------------process()--------------------->");
+		logger.debug("-----------------------process()---------------------");
+		
 
-		logger.info("startTime:------------------------------------------->"+startTime);
-		logger.info("startDate:------------------------------------------->"+startDate);
+		logger.debug("startTime:------------------------------------------->"+startTime);
+		logger.debug("startDate:------------------------------------------->"+startDate);
 		
 		Status status = null; 
 		// Start transaction
@@ -69,21 +70,22 @@ public class MySinks extends AbstractSink implements Configurable {
 			}
 		}
 		try {
-
 			logger.debug("Get event.");
+			logger.debug("event.getHeaders():--------------------->"+event.getHeaders());
+			logger.debug("event.getBody():--------------------->"+event.getBody());
 			// 取值
 			String body = new String(event.getBody());
 			String res ="";
-			// logger.info("event.getBody()-----" + body);
+			// logger.debug("event.getBody()-----" + body);
 			String[] Pnss = body.split(" ");
 			// 定时器
 			CacheMap<String, Integer> counter = CacheMap.getDefault();
 			
 			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && 
 					((Pnss[0].substring(5, 15)).compareTo(startDate))>=0 &&
-					((Pnss[1].substring(0).compareTo(startTime))>=0)){
-				logger.info("body---------------------------->date:"+(Pnss[0].substring(5, 15)));
-				logger.info("body---------------------------->time:"+(Pnss[1].substring(0)));
+					((Pnss[1].substring(0, 8).compareTo(startTime))>=0)){
+				logger.debug("body---------------------------->date:"+(Pnss[0].substring(5, 15)));
+				logger.debug("body---------------------------->time:"+(Pnss[1].substring(0, 8)));
 				
 				String s = Pnss[2].substring(8);
 				s = s.substring(0, s.length() - 1);
@@ -135,7 +137,7 @@ public class MySinks extends AbstractSink implements Configurable {
 			status = Status.READY;
 		} catch (Throwable th) {
 			txn.rollback();
-			logger.info("<-----------------------rollback()--------------------->");
+			logger.debug("-----------------------rollback()---------------------");
 			status = Status.BACKOFF; 
 			if (th instanceof Error) {
 				throw (Error) th;
@@ -143,7 +145,7 @@ public class MySinks extends AbstractSink implements Configurable {
 				throw new EventDeliveryException(th);
 			}
 		} finally {
-			logger.info("<-----------------------close()--------------------->");
+			logger.debug("-----------------------close()---------------------");
 			txn.close();
 		}
 		return status;
@@ -153,7 +155,7 @@ public class MySinks extends AbstractSink implements Configurable {
         try {  
             String msgStr = new String(msg, "utf-8");  
             rollingFileLogger.write(msgStr);  
-            logger.info("<-----------------------handleEvent()-------------try-------->");
+            logger.debug("-----------------------handleEvent()-------------try--------");
         } catch (Exception e) {  
             logger.error("Cookie inject error : ", e.getMessage(), e);  
         }  
