@@ -3,6 +3,7 @@ package com.alert.msgalert;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,24 +39,23 @@ public class MySinks extends AbstractSink implements Configurable {
     private static final String startTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
 	public void configure(Context context) {
-		logger.debug("-----------------------configure()---------------------");
+		logger.info("-----------------------configure()---------------------");
 		String sinkId = context.getString(SINK_ID, "log");  
         String sinkFileName = context.getString(SINK_FILENAME); 
         String sinkFilePattern = context.getString(SINK_FILEPATTERN);
   
-        logger.debug("{} : {} ", SINK_ID, sinkId);  
-        logger.debug("{} : {} ", SINK_FILENAME, sinkFileName);  
-        logger.debug("{} : {} ", SINK_FILEPATTERN, sinkFilePattern);  
+        logger.info("{} : {} ", SINK_ID, sinkId);  
+        logger.info("{} : {} ", SINK_FILENAME, sinkFileName);  
+        logger.info("{} : {} ", SINK_FILEPATTERN, sinkFilePattern);  
   
         rollingFileLogger = new RollingFileLogger(sinkId, sinkFileName, sinkFilePattern);  
 	}
 
 	public Status process() throws EventDeliveryException {
-		logger.debug("-----------------------process()---------------------");
-		
+		logger.info("-----------------------process()---------------------");
 
-		logger.debug("startTime:------------------------------------------->"+startTime);
-		logger.debug("startDate:------------------------------------------->"+startDate);
+		logger.info("startDate:---------------------------->"+startDate);
+		logger.info("startTime:---------------------------->"+startTime);
 		
 		Status status = null; 
 		// Start transaction
@@ -71,12 +71,11 @@ public class MySinks extends AbstractSink implements Configurable {
 		}
 		try {
 			logger.debug("Get event.");
-			logger.debug("event.getHeaders():--------------------->"+event.getHeaders());
-			logger.debug("event.getBody():--------------------->"+event.getBody());
+			logger.info("event.getHeaders():--------------------->"+event.getHeaders().toString());
 			// 取值
 			String body = new String(event.getBody());
+			logger.info("event.getBody():--------------------->"+body);
 			String res ="";
-			// logger.debug("event.getBody()-----" + body);
 			String[] Pnss = body.split(" ");
 			// 定时器
 			CacheMap<String, Integer> counter = CacheMap.getDefault();
@@ -84,8 +83,8 @@ public class MySinks extends AbstractSink implements Configurable {
 			if ((Pnss[0].length())>4 && (Pnss[0].substring(0, 4)).equals("time") && 
 					((Pnss[0].substring(5, 15)).compareTo(startDate))>=0 &&
 					((Pnss[1].substring(0, 8).compareTo(startTime))>=0)){
-				logger.debug("body---------------------------->date:"+(Pnss[0].substring(5, 15)));
-				logger.debug("body---------------------------->time:"+(Pnss[1].substring(0, 8)));
+				logger.info("bodydate:---------------------------->"+(Pnss[0].substring(5, 15)));
+				logger.info("bodytime:---------------------------->"+(Pnss[1].substring(0, 8)));
 				
 				String s = Pnss[2].substring(8);
 				s = s.substring(0, s.length() - 1);
@@ -106,10 +105,10 @@ public class MySinks extends AbstractSink implements Configurable {
 						} else {
 							counter.put(pn, 1);
 						}
-
+						count = counter.get(pn);
+						event.setHeaders(new HashMap<String, String>(count,totalCount));
 						// 阀值控制
-						if (pn != null && counter.get(pn) > Integer.parseInt(PropertiesUtil.getProperty("Threshold"))) {
-							count = counter.get(pn);
+						if (pn != null && count > Integer.parseInt(PropertiesUtil.getProperty("Threshold"))) {
 							if (count % 10 == 0) {
 								MailUtil.sendMail(pn, count, totalCount);
 								TimeUnit.SECONDS.sleep(30);
@@ -128,16 +127,23 @@ public class MySinks extends AbstractSink implements Configurable {
 
 				Pns = null;
 				Pnss = null;
+			}else {
+				event = null;
+				txn.commit();
+				return Status.READY;
 			}
+			
 			byte[] results = res.getBytes();
-			if(results!=null)
+			if(results!=null && results.toString().trim()!="")
 			handleEvent(res.getBytes());
+			
+			logger.info("event.getHeaders():----------2----------->"+event.getHeaders().toString());
 			
 			txn.commit();
 			status = Status.READY;
 		} catch (Throwable th) {
 			txn.rollback();
-			logger.debug("-----------------------rollback()---------------------");
+			logger.info("=========================rollback()=========================");
 			status = Status.BACKOFF; 
 			if (th instanceof Error) {
 				throw (Error) th;
@@ -145,7 +151,7 @@ public class MySinks extends AbstractSink implements Configurable {
 				throw new EventDeliveryException(th);
 			}
 		} finally {
-			logger.debug("-----------------------close()---------------------");
+			logger.info("-----------------------close()---------------------");
 			txn.close();
 		}
 		return status;
@@ -155,7 +161,7 @@ public class MySinks extends AbstractSink implements Configurable {
         try {  
             String msgStr = new String(msg, "utf-8");  
             rollingFileLogger.write(msgStr);  
-            logger.debug("-----------------------handleEvent()-------------try--------");
+            logger.info("-----------------------handleEvent()-------------try--------");
         } catch (Exception e) {  
             logger.error("Cookie inject error : ", e.getMessage(), e);  
         }  
