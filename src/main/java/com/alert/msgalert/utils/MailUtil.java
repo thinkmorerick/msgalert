@@ -23,4 +23,25 @@ public class MailUtil {
         SimpleMailSender.sendTextMail(mailInfo);  
     }  
 	
+	public static void sendRollbackMail(Integer rollbackCount)  
+    {  
+        MailSenderInfo mailInfo = new MailSenderInfo();  
+        
+        mailInfo.setMailServerHost(PropertiesUtil.getProperty("ServerHost"));
+        mailInfo.setMailServerPort(PropertiesUtil.getProperty("ServerPort"));
+        mailInfo.setValidate(true);
+        mailInfo.setUserName(PropertiesUtil.getProperty("UserName"));
+        mailInfo.setPassword(PropertiesUtil.getProperty("Password"));//您的邮箱密码
+        mailInfo.setFromAddress(PropertiesUtil.getProperty("FromAddress"));
+        mailInfo.setToAddress(PropertiesUtil.getProperty("ToAddress"));
+        
+        
+//        mailInfo.setCcAddress("");  
+//        mailInfo.setBccAddress("");  
+        mailInfo.setSubject("--- Rollback ---");
+        mailInfo.setContent("发生回滚 "+rollbackCount+" 次。");
+        
+        SimpleMailSender.sendTextMail(mailInfo);  
+    }  
+	
 }

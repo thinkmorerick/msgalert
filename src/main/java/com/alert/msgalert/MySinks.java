@@ -30,7 +30,8 @@ public class MySinks extends AbstractSink implements Configurable {
 	
 	private List<String> pnList = new ArrayList<String>();
 	private Integer totalCount;
-	
+	private Integer rollbackCount = 0;
+		
 	private static final String SINK_ID = "sink.id";  
     private static final String SINK_FILENAME = "sink.filename";  
     private static final String SINK_FILEPATTERN = "sink.filepattern";  
@@ -137,12 +138,14 @@ public class MySinks extends AbstractSink implements Configurable {
 			if(results!=null && results.toString().trim()!="")
 			handleEvent(res.getBytes());
 			
-			logger.info("event.getHeaders():----------2----------->"+event.getHeaders().toString());
 			
 			txn.commit();
 			status = Status.READY;
+			logger.info("event.getHeaders():----------2----------->"+event.getHeaders().toString());
 		} catch (Throwable th) {
 			txn.rollback();
+			rollbackCount+=1;
+			MailUtil.sendRollbackMail(rollbackCount);
 			logger.info("=========================rollback()=========================");
 			status = Status.BACKOFF; 
 			if (th instanceof Error) {
