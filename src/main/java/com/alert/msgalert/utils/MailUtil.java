@@ -2,6 +2,13 @@ package com.alert.msgalert.utils;
 
 public class MailUtil {
 	
+	/**
+	 * 告警邮件
+	 * 
+	 * @param pn
+	 * @param count
+	 * @param totalCount
+	 */
 	public static void sendMail(String pn, Integer count, Integer totalCount)  
     {  
         MailSenderInfo mailInfo = new MailSenderInfo();  
@@ -23,6 +30,12 @@ public class MailUtil {
         SimpleMailSender.sendTextMail(mailInfo);  
     }  
 	
+	/**
+	 * 
+	 * 数据回滚提示邮件
+	 * 
+	 * @param rollbackCount
+	 */
 	public static void sendRollbackMail(Integer rollbackCount)  
     {  
         MailSenderInfo mailInfo = new MailSenderInfo();  

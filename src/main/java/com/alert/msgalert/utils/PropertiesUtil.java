@@ -3,6 +3,13 @@ package com.alert.msgalert.utils;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * 
+ * 配置文件工具类
+ * 
+ * @author data
+ *
+ */
 public class PropertiesUtil {
 
     private static String default_properties = "mail.properties";
