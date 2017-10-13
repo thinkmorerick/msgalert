@@ -108,6 +108,7 @@ public class MySinks extends AbstractSink implements Configurable {
 						}
 						count = counter.get(pn);
 						event.setHeaders(new HashMap<String, String>(count,totalCount));
+						logger.info("event.getHeaders():----------2----------->"+event.getHeaders().toString());
 						// 阀值控制
 						if (pn != null && count > Integer.parseInt(PropertiesUtil.getProperty("Threshold"))) {
 							if (count % 10 == 0) {
@@ -141,12 +142,11 @@ public class MySinks extends AbstractSink implements Configurable {
 			
 			txn.commit();
 			status = Status.READY;
-			logger.info("event.getHeaders():----------2----------->"+event.getHeaders().toString());
 		} catch (Throwable th) {
-			txn.rollback();
 			rollbackCount+=1;
-			MailUtil.sendRollbackMail(rollbackCount);
 			logger.info("=========================rollback()=========================");
+			MailUtil.sendRollbackMail(rollbackCount);
+			txn.rollback();
 			status = Status.BACKOFF; 
 			if (th instanceof Error) {
 				throw (Error) th;
